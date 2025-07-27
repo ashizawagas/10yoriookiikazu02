@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10といくつかな⓶ - 算数学習アプリ</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            user-select: none;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .problem-area {
+            padding: 20px;
+            text-align: center;
+            background: #f9f9f9;
+            border-bottom: 3px solid #e0e0e0;
+        }
+
+        .problem-text {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 15px;
+        }
+
+        .total-blocks {
+            font-size: 2em;
+            color: #1976d2;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: #f5f5f5;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn-circle {
+            background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%);
+            color: white;
+        }
+
+        .btn-new {
+            background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%);
+            color: white;
+        }
+
+        .btn.active {
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8a50 100%);
+            transform: scale(1.05);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .canvas-container {
+            position: relative;
+            text-align: center;
+            padding: 20px;
+            min-height: 400px;
+        }
+
+        #gameCanvas {
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            background: #fafafa;
+            cursor: crosshair;
+            max-width: 100%;
+        }
+
+        .answer-section {
+            padding: 20px;
+            background: #fff3e0;
+            border-top: 3px solid #ff9800;
+        }
+
+        .answer-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .answer-input {
+            width: 60px;
+            height: 50px;
+            font-size: 1.5em;
+            text-align: center;
+            border: 3px solid #ff9800;
+            border-radius: 10px;
+            font-weight: bold;
+            background: white;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #4caf50;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .check-btn {
+            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+            color: white;
+            padding: 12px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .check-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.3em;
+            font-weight: bold;
+            text-align: center;
+            min-height: 50px;
+        }
+
+        .result.correct {
+            background: #c8e6c9;
+            color: #2e7d32;
+            border: 3px solid #4caf50;
+        }
+
+        .result.incorrect {
+            background: #ffcdd2;
+            color: #c62828;
+            border: 3px solid #f44336;
+        }
+
+        .instructions {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 10px;
+            border-left: 5px solid #2196f3;
+        }
+
+        .instructions h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+
+        .status-info {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 15px;
+            background: #ffffff;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .status-item {
+            text-align: center;
+            min-width: 100px;
+        }
+
+        .status-label {
+            font-size: 1em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .status-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2196f3;
+        }
+
+        .celebration {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5em;
+            color: #4caf50;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .celebration.show {
+            animation: celebrate 2s ease-out;
+        }
+
+        @keyframes celebrate {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .answer-form {
+                font-size: 1.2em;
+            }
+            
+            .answer-input {
+                width: 50px;
+                height: 40px;
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔢 10といくつかな⓶ 🔢</h1>
+            <p>いろいろなブロックをまるでかこんで10のまとまりをつくろう！</p>
+        </div>
+
+        <div class="problem-area">
+            <div class="problem-text">ブロックは ぜんぶで なんこ？</div>
+            <div id="totalBlocks" class="total-blocks">？こ</div>
+        </div>
+
+        <div class="status-info">
+            <div class="status-item">
+                <div class="status-label">のこりのかず</div>
+                <div id="remainingValue" class="status-value">0</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">10のまとまり</div>
+                <div id="tenGroups" class="status-value">0</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="moveBtn" class="btn btn-circle">👆 ブロックをうごかす</button>
+            <button id="groupBtn" class="btn btn-circle active">⭕ 10のまとまりをつくる</button>
+            <button id="newProblemBtn" class="btn btn-new">🎲 あたらしいもんだい</button>
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="gameCanvas" width="700" height="350"></canvas>
+            <div id="celebration" class="celebration"></div>
+        </div>
+
+        <div class="answer-section">
+            <div class="answer-form">
+                <span>10と</span>
+                <input type="number" id="remainingInput" class="answer-input" min="0" max="10" placeholder="?">
+                <span>で</span>
+                <span>ぜんぶで</span>
+                <input type="number" id="totalInput" class="answer-input" min="11" max="20" placeholder="?">
+                <span>こ</span>
+                <button id="checkBtn" class="check-btn">こたえあわせ</button>
+            </div>
+            <div id="result" class="result"></div>
+        </div>
+
+        <div class="instructions">
+            <h3>🎮 あそびかた</h3>
+            <ul>
+                <li>「ブロックをうごかす」モード：ブロックをドラッグしてうごかせるよ</li>
+                <li>「10のまとまりをつくる」モード：ブロックを合計10になるようにまるでかこもう</li>
+                <li>1ブロック、2ブロック、5ブロックをうまくくみあわせよう</li>
+                <li>のこったブロックのかずをかぞえよう</li>
+                <li>「10と○で ぜんぶで□こ」にかずをいれよう</li>
+                <li>「こたえあわせ」ボタンでせいかいかかくにんしよう</li>
+                <li>「あたらしいもんだい」で つぎのもんだいにちょうせんしよう</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // キャンバスとコンテキストの取得
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // ゲーム状態の管理
+        let blocks = [];
+        let tenGroups = [];
+        let currentTotal = 0;
+        let drawingPath = [];
+        let isDrawing = false;
+        let currentMode = 'group'; // 'move' or 'group'
+        let isDragging = false;
+        let dragTarget = null;
+        let dragOffset = { x: 0, y: 0 };
+        
+        // ブロックのサイズと色設定
+        const BLOCK_SIZE = 40;
+        const BLOCK_COLORS = {
+            1: '#4ecdc4',  // 青緑
+            2: '#ff6b6b',  // 赤
+            5: '#4ecdc4'   // 紫
+        };
+        const TEN_GROUP_COLOR = '#ffd700';
+        const TEN_GROUP_WIDTH = 10 * (BLOCK_SIZE * 0.8);
+        const TEN_GROUP_HEIGHT = BLOCK_SIZE;
+
+        // ブロッククラス
+        class Block {
+            constructor(x, y, value) {
+                this.x = x;
+                this.y = y;
+                this.value = value; // 1, 2, or 5
+                this.size = BLOCK_SIZE;
+                this.color = BLOCK_COLORS[value];
+                this.id = Date.now() + Math.random();
+                
+                // 値によってサイズを調整
+                if (value === 2) {
+                    this.width = BLOCK_SIZE * 2;
+                    this.height = BLOCK_SIZE;
+                } else if (value === 5) {
+                    this.width = BLOCK_SIZE * 5;
+                    this.height = BLOCK_SIZE;
+                } else {
+                    this.width = BLOCK_SIZE;
+                    this.height = BLOCK_SIZE;
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                
+                // 境界線
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(this.x, this.y, this.width, this.height);
+
+                if (this.value === 1) {
+                    // 1ブロック - 数字「1」を描画
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 24px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('1', this.x + this.width/2, this.y + this.height/2);
+                } else if (this.value === 2) {
+                    // 2ブロック - 2つに分割して「1」を2つ描画
+                    for (let i = 0; i < 2; i++) {
+                        const segmentX = this.x + i * BLOCK_SIZE;
+                        ctx.strokeStyle = '#333';
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(segmentX, this.y, BLOCK_SIZE, BLOCK_SIZE);
+                        
+                        ctx.fillStyle = 'white';
+                        ctx.font = 'bold 20px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText('1', segmentX + BLOCK_SIZE/2, this.y + this.height/2);
+                    }
+                    // 「2」の文字を右下に
+                    ctx.fillStyle = '#333';
+                    ctx.font = 'bold 16px Arial';
+                    ctx.textAlign = 'right';
+                    ctx.textBaseline = 'bottom';
+                    ctx.fillText('2', this.x + this.width - 5, this.y + this.height - 5);
+                } else if (this.value === 5) {
+                    // 5ブロック - 5つに分割して「1」を5つ描画
+                    for (let i = 0; i < 5; i++) {
+                        const segmentX = this.x + i * BLOCK_SIZE;
+                        ctx.strokeStyle = '#333';
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(segmentX, this.y, BLOCK_SIZE, BLOCK_SIZE);
+                        
+                        ctx.fillStyle = 'white';
+                        ctx.font = 'bold 18px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText('1', segmentX + BLOCK_SIZE/2, this.y + this.height/2);
+                    }
+                    // 「5」の文字を右下に
+                    ctx.fillStyle = '#333';
+                    ctx.font = 'bold 16px Arial';
+                    ctx.textAlign = 'right';
+                    ctx.textBaseline = 'bottom';
+                    ctx.fillText('5', this.x + this.width - 5, this.y + this.height - 5);
+                }
+            }
+
+            getCenter() {
+                return {
+                    x: this.x + this.width/2,
+                    y: this.y + this.height/2
+                };
+            }
+
+            contains(x, y) {
+                return x >= this.x && x <= this.x + this.width && 
+                       y >= this.y && y <= this.y + this.height;
+            }
+        }
+
+        // 10のまとまりクラス
+        class TenGroup {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.width = TEN_GROUP_WIDTH;
+                this.height = TEN_GROUP_HEIGHT;
+                this.id = Date.now() + Math.random();
+            }
+
+            draw() {
+                // 金色の背景
+                ctx.fillStyle = TEN_GROUP_COLOR;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                
+                // 境界線
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(this.x, this.y, this.width, this.height);
+
+                // 10個のブロックを横一列に描画
+                const blockWidth = this.width / 10;
+                for (let i = 0; i < 10; i++) {
+                    const blockX = this.x + i * blockWidth;
+                    const blockY = this.y;
+                    
+                    // 個別ブロックの境界線
+                    ctx.strokeStyle = '#333';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(blockX, blockY, blockWidth, this.height);
+                    
+                    // 数字「1」を各ブロックに描画
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('1', blockX + blockWidth/2, blockY + this.height/2);
+                }
+
+                // 「10」の文字を右下に
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'bottom';
+                ctx.fillText('10', this.x + this.width - 5, this.y + this.height - 5);
+            }
+
+            contains(x, y) {
+                return x >= this.x && x <= this.x + this.width && 
+                       y >= this.y && y <= this.y + this.height;
+            }
+        }
+
+        // モード切り替え関数
+        function setMode(newMode) {
+            currentMode = newMode;
+            
+            // 全てのボタンのactiveクラスを削除
+            document.querySelectorAll('.btn-circle').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // 現在のモードのボタンをアクティブに
+            if (newMode === 'move') {
+                document.getElementById('moveBtn').classList.add('active');
+                canvas.style.cursor = 'grab';
+            } else if (newMode === 'group') {
+                document.getElementById('groupBtn').classList.add('active');
+                canvas.style.cursor = 'crosshair';
+            }
+        }
+
+        // ブロックの組み合わせを生成する関数
+        function generateBlockCombination(target) {
+            const combinations = [];
+            
+            // 1, 2, 5の組み合わせで target の値を作る
+            for (let fives = 0; fives <= Math.floor(target / 5); fives++) {
+                for (let twos = 0; twos <= Math.floor((target - fives * 5) / 2); twos++) {
+                    const ones = target - fives * 5 - twos * 2;
+                    if (ones >= 0) {
+                        combinations.push({ ones, twos, fives });
+                    }
+                }
+            }
+            
+            // ランダムに選択
+            return combinations[Math.floor(Math.random() * combinations.length)];
+        }
+
+        // 新しい問題を生成
+        function generateNewProblem() {
+            // 11-20のランダムな数を生成
+            currentTotal = Math.floor(Math.random() * 10) + 11;
+            
+            // 既存のブロックとグループをクリア
+            blocks = [];
+            tenGroups = [];
+            
+            // ブロックの組み合わせを生成
+            const combination = generateBlockCombination(currentTotal);
+            
+            // ブロックを配置
+            const padding = 20;
+            const allBlocks = [];
+            
+            // 1ブロックを追加
+            for (let i = 0; i < combination.ones; i++) {
+                allBlocks.push({ value: 1, width: BLOCK_SIZE, height: BLOCK_SIZE });
+            }
+            
+            // 2ブロックを追加
+            for (let i = 0; i < combination.twos; i++) {
+                allBlocks.push({ value: 2, width: BLOCK_SIZE * 2, height: BLOCK_SIZE });
+            }
+            
+            // 5ブロックを追加
+            for (let i = 0; i < combination.fives; i++) {
+                allBlocks.push({ value: 5, width: BLOCK_SIZE * 5, height: BLOCK_SIZE });
+            }
+            
+            // ブロックをシャッフル
+            for (let i = allBlocks.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [allBlocks[i], allBlocks[j]] = [allBlocks[j], allBlocks[i]];
+            }
+            
+            // ブロックをランダムに配置
+            allBlocks.forEach(blockInfo => {
+                let x, y;
+                let attempts = 0;
+                
+                do {
+                    x = padding + Math.random() * (canvas.width - blockInfo.width - padding);
+                    y = padding + Math.random() * (canvas.height - blockInfo.height - padding);
+                    attempts++;
+                } while (attempts < 100 && blocks.some(block => 
+                    !(x >= block.x + block.width || x + blockInfo.width <= block.x ||
+                      y >= block.y + block.height || y + blockInfo.height <= block.y)
+                ));
+                
+                blocks.push(new Block(x, y, blockInfo.value));
+            });
+            
+            // UIを更新
+            updateUI();
+            clearAnswers();
+            clearResult();
+        }
+
+        // 点が多角形の内部にあるかチェック（ray casting algorithm）
+        function pointInPolygon(point, polygon) {
+            let x = point.x, y = point.y;
+            let inside = false;
+            
+            for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+                let xi = polygon[i].x, yi = polygon[i].y;
+                let xj = polygon[j].x, yj = polygon[j].y;
+                
+                if (((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
+                    inside = !inside;
+                }
+            }
+            
+            return inside;
+        }
+
+        // 囲まれたブロックを10のまとまりにする
+        function processDrawing(path) {
+            if (path.length < 10) return; // 短すぎるパスは無視
+
+            // 囲まれたブロックを見つける
+            const enclosedBlocks = blocks.filter(block => {
+                const center = block.getCenter();
+                return pointInPolygon(center, path);
+            });
+
+            // 囲まれたブロックの合計値を計算
+            const totalValue = enclosedBlocks.reduce((sum, block) => sum + block.value, 0);
+
+            if (totalValue === 10) {
+                // 合計が10の場合、10のまとまりを作成
+                createTenGroup(enclosedBlocks);
+                showCelebration('10のまとまりができたよ！');
+            } else if (enclosedBlocks.length > 0) {
+                showCelebration(`かこまれたブロックの合計は${totalValue}です\n合計10になるようにかこんでね！`);
+            }
+        }
+
+        // 10のまとまりを作成
+        function createTenGroup(blocksToRemove) {
+            // 最初のブロックの位置を基準に10のまとまりを配置
+            let groupX = Math.min(...blocksToRemove.map(b => b.x));
+            let groupY = Math.min(...blocksToRemove.map(b => b.y));
+            
+            // キャンバス内に収まるように調整
+            groupX = Math.max(20, Math.min(canvas.width - TEN_GROUP_WIDTH - 20, groupX));
+            groupY = Math.max(20, Math.min(canvas.height - TEN_GROUP_HEIGHT - 20, groupY));
+            
+            // ブロックを削除
+            blocksToRemove.forEach(block => {
+                const index = blocks.indexOf(block);
+                if (index > -1) blocks.splice(index, 1);
+            });
+
+            // 10のまとまりを作成
+            const tenGroup = new TenGroup(groupX, groupY);
+            tenGroups.push(tenGroup);
+            updateUI();
+        }
+
+        // 答えをチェック
+        function checkAnswer() {
+            const remainingInput = parseInt(document.getElementById('remainingInput').value);
+            const totalInput = parseInt(document.getElementById('totalInput').value);
+            
+            const correctRemaining = blocks.reduce((sum, block) => sum + block.value, 0);
+            const correctTotal = currentTotal;
+            
+            const resultDiv = document.getElementById('result');
+            
+            if (remainingInput === correctRemaining && totalInput === correctTotal) {
+                resultDiv.textContent = '🎉 せいかい！ よくできました！ 🎉';
+                resultDiv.className = 'result correct';
+                showCelebration('せいかい！');
+            } else {
+                let message = '❌ まちがいです。もういちどかんがえてみよう。\n';
+                if (remainingInput !== correctRemaining) {
+                    message += `のこりは${correctRemaining}です。\n`;
+                }
+                if (totalInput !== correctTotal) {
+                    message += `ぜんぶで${correctTotal}です。`;
+                }
+                resultDiv.textContent = message;
+                resultDiv.className = 'result incorrect';
+            }
+        }
+
+        // UIを更新
+        function updateUI() {
+            const remainingValue = blocks.reduce((sum, block) => sum + block.value, 0);
+            document.getElementById('remainingValue').textContent = remainingValue;
+            document.getElementById('tenGroups').textContent = tenGroups.length;
+            document.getElementById('totalBlocks').textContent = currentTotal;
+        }
+
+        // 答えをクリア
+        function clearAnswers() {
+            document.getElementById('remainingInput').value = '';
+            document.getElementById('totalInput').value = '';
+        }
+
+        // 結果をクリア
+        function clearResult() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = '';
+            resultDiv.className = 'result';
+        }
+
+        // お祝いメッセージを表示
+        function showCelebration(message) {
+            const celebration = document.getElementById('celebration');
+            celebration.textContent = message;
+            celebration.classList.add('show');
+            
+            setTimeout(() => {
+                celebration.classList.remove('show');
+            }, 2000);
+        }
+
+        // マウス位置を取得する関数（タッチにも対応）
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+            const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        // マウスダウン/タッチスタート
+        function handleStart(e) {
+            e.preventDefault();
+            const pos = getMousePos(e);
+            
+            if (currentMode === 'group') {
+                // まとめるモード
+                isDrawing = true;
+                drawingPath = [pos];
+                return;
+            }
+
+            if (currentMode === 'move') {
+                // 移動モード - ドラッグの準備
+                // 10のまとまりをチェック
+                for (let i = tenGroups.length - 1; i >= 0; i--) {
+                    if (tenGroups[i].contains(pos.x, pos.y)) {
+                        dragTarget = tenGroups[i];
+                        dragOffset.x = pos.x - tenGroups[i].x;
+                        dragOffset.y = pos.y - tenGroups[i].y;
+                        canvas.style.cursor = 'grabbing';
+                        return;
+                    }
+                }
+
+                // ブロックをチェック
+                for (let i = blocks.length - 1; i >= 0; i--) {
+                    if (blocks[i].contains(pos.x, pos.y)) {
+                        dragTarget = blocks[i];
+                        dragOffset.x = pos.x - blocks[i].x;
+                        dragOffset.y = pos.y - blocks[i].y;
+                        canvas.style.cursor = 'grabbing';
+                        return;
+                    }
+                }
+            }
+        }
+
+        // マウスムーブ/タッチムーブ
+        function handleMove(e) {
+            e.preventDefault();
+            const pos = getMousePos(e);
+            
+            if (currentMode === 'group' && isDrawing) {
+                drawingPath.push(pos);
+                return;
+            }
+
+            // ドラッグ対象がある場合、ドラッグ開始
+            if (dragTarget && !isDragging && currentMode === 'move') {
+                isDragging = true;
+            }
+
+            if (!isDragging || !dragTarget || currentMode !== 'move') return;
+            
+            const newX = pos.x - dragOffset.x;
+            const newY = pos.y - dragOffset.y;
+            
+            // キャンバス内に制限
+            if (dragTarget instanceof Block) {
+                dragTarget.x = Math.max(0, Math.min(canvas.width - dragTarget.width, newX));
+                dragTarget.y = Math.max(0, Math.min(canvas.height - dragTarget.height, newY));
+            } else if (dragTarget instanceof TenGroup) {
+                dragTarget.x = Math.max(0, Math.min(canvas.width - TEN_GROUP_WIDTH, newX));
+                dragTarget.y = Math.max(0, Math.min(canvas.height - TEN_GROUP_HEIGHT, newY));
+            }
+        }
+
+        // マウスアップ/タッチエンド
+        function handleEnd(e) {
+            e.preventDefault();
+            
+            if (currentMode === 'group' && isDrawing) {
+                isDrawing = false;
+                processDrawing(drawingPath);
+                drawingPath = [];
+                return;
+            }
+
+            // ドラッグ状態をリセット
+            if (currentMode === 'move') {
+                isDragging = false;
+                dragTarget = null;
+                canvas.style.cursor = 'grab';
+            }
+        }
+
+        // イベントリスナーの設定
+        canvas.addEventListener('mousedown', handleStart);
+        canvas.addEventListener('mousemove', handleMove);
+        canvas.addEventListener('mouseup', handleEnd);
+        canvas.addEventListener('touchstart', handleStart);
+        canvas.addEventListener('touchmove', handleMove);
+        canvas.addEventListener('touchend', handleEnd);
+
+        // ボタンのイベントリスナー
+        document.getElementById('moveBtn').addEventListener('click', () => setMode('move'));
+        document.getElementById('groupBtn').addEventListener('click', () => setMode('group'));
+        document.getElementById('newProblemBtn').addEventListener('click', generateNewProblem);
+        document.getElementById('checkBtn').addEventListener('click', checkAnswer);
+
+        // Enterキーでも答え合わせができるように
+        document.getElementById('remainingInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkAnswer();
+        });
+        document.getElementById('totalInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkAnswer();
+        });
+
+        // メインの描画ループ
+        function gameLoop() {
+            // キャンバスをクリア
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 全てのオブジェクトを描画
+            blocks.forEach(block => block.draw());
+            tenGroups.forEach(group => group.draw());
+
+            // 現在描画中のパスを描画
+            if (isDrawing && drawingPath.length > 1) {
+                ctx.strokeStyle = '#ff6b35';
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.beginPath();
+                ctx.moveTo(drawingPath[0].x, drawingPath[0].y);
+                for (let i = 1; i < drawingPath.length; i++) {
+                    ctx.lineTo(drawingPath[i].x, drawingPath[i].y);
+                }
+                ctx.stroke();
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // キャンバスサイズを調整する関数
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const maxWidth = Math.min(700, container.clientWidth - 40);
+            const maxHeight = 350;
+            
+            canvas.width = maxWidth;
+            canvas.height = maxHeight;
+            canvas.style.width = maxWidth + 'px';
+            canvas.style.height = maxHeight + 'px';
+        }
+
+        // 初期化
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        setMode('group'); // 初期モードを設定
+        generateNewProblem();
+        gameLoop();
+
+        // 最初のメッセージ
+        setTimeout(() => {
+            showCelebration('いろいろなブロックを\nくみあわせて10をつくろう！');
+        }, 1000);
+    </script>
+</body>
+</html>
